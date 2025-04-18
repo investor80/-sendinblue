@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="theme-color" content="#1e88e5" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Notificação com Service Worker</title>
+</head>
+<body>
+  <h1>Notificação com Service Worker</h1>
+  <button id="btnNotificar">Mostrar Notificação</button>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registrado!', reg))
+        .catch(err => console.error('Erro ao registrar o Service Worker:', err));
+    }
+
+    document.getElementById('btnNotificar').addEventListener('click', async () => {
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') {
+        navigator.serviceWorker.ready.then(swReg => {
+          swReg.showNotification('MozTrabalha - Nova Vaga!', {
+            body: 'Vaga para Front-end disponível agora!',
+            icon: 'https://cdn-icons-png.flaticon.com/512/1077/1077012.png',
+            image: 'https://images.unsplash.com/photo-1581091870630-fd1a1a4c1515',
+            vibrate: [500, 200, 500],
+            requireInteraction: true,
+            renotify: true,
+            tag: 'vaga-front',
+            data: {
+              url: 'https://moztrabalha.com'
+            },
+            actions: [
+              {
+                action: 'abrir',
+                title: 'Ver Vaga'
+              },
+              {
+                action: 'fechar',
+                title: 'Ignorar'
+              }
+            ]
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
